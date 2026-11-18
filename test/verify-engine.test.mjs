@@ -1,8 +1,9 @@
 /**
- * test/verify-engine.test.mjs — Automated Deterministic Game-Verdict Suite
+ * test/verify-engine.test.mjs — Automated Deterministic Game-Verdict Suite (v0.3)
  * Verifies Q16.16 fixed-point arithmetic, save serialization (Law 5),
  * seeded RNG determinism (Law 7), cellular sheaf coboundary, thermodynamic laws,
- * Rebellion A7.2 collapse repair, and symplectic labyrinth integration.
+ * Rebellion A7.2 collapse repair, symplectic labyrinth integration, and v0.3
+ * multi-chapter game-verdict state transitions.
  *
  * Run: node --test test/verify-engine.test.mjs
  * Signed-off-by: Borealis Serenity Hedling <chguard-sentinel@vaked.dev>
@@ -31,12 +32,18 @@ import {
   verifyThermodynamicLaws,
   applyLawOfCycles,
   executeRebellionSurgery,
+  evaluateGameVerdict,
 } from "../src/sheaf-kernel.js";
 
 import {
   computeEffectiveDistanceQ16,
   stepLabyrinthTick,
 } from "../src/labyrinth-motion.js";
+
+import {
+  CAMPAIGN_CHAPTERS,
+  buildMitakiharaCampaignState,
+} from "../src/campaign-mitakihara-data.js";
 
 test("1. Q16.16 Fixed-Point & Pole-Safe Tikhonov Division", () => {
   const two = toQ16(2.0);
@@ -153,4 +160,69 @@ test("6. Symplectic Labyrinth Spatial Distortion & Multi-Tick Integration", () =
   assert.equal(simState.tick, 60);
   assert.equal(simState.breached, false);
   assert.ok(simState.stalk[1] > toQ16(1.0), "Despair accumulates monotonically without Hope action");
+});
+
+test("7. Multi-Chapter Campaign & Deterministic Game-Verdict State Machine (v0.3)", () => {
+  assert.equal(CAMPAIGN_CHAPTERS.length, 3);
+
+  const ch1 = buildMitakiharaCampaignState("chapter-1-walpurgisnacht");
+  const dBreak = ch1.labyrinth.dBreakQ16;
+  const ceiling = ch1.chapter.entropyCeilingQ16;
+
+  // 1. Active state when tick < targetTicks
+  const activeVerdict = evaluateGameVerdict({
+    tick: 100,
+    targetTicks: 1800,
+    nodes: ch1.nodes,
+    stalks: ch1.stalks,
+    dBreakQ16: dBreak,
+    entropyCeilingQ16: ceiling,
+    horizonsInverted: false,
+  });
+  assert.equal(activeVerdict.status, "ACTIVE");
+  assert.equal(activeVerdict.halted, false);
+
+  // 2. Victory state when tick >= targetTicks and all non-sink nodes < D_break
+  const purifiedStalks = applyLawOfCycles(ch1.stalks, dBreak);
+  const winVerdict = evaluateGameVerdict({
+    tick: 1800,
+    targetTicks: 1800,
+    nodes: ch1.nodes,
+    stalks: purifiedStalks,
+    dBreakQ16: dBreak,
+    entropyCeilingQ16: ceiling,
+    horizonsInverted: false,
+  });
+  assert.equal(winVerdict.status, "VICTORY_STABILIZED");
+  assert.equal(winVerdict.halted, true);
+
+  // 3. Catastrophic breach when Despair >= 5 * D_break (50.0) without Horizon Inversion
+  const collapsedStalks = ch1.stalks.map((s) => Int32Array.from(s));
+  collapsedStalks[2][1] = toQ16(51.0);
+  const breachVerdict = evaluateGameVerdict({
+    tick: 500,
+    targetTicks: 1800,
+    nodes: ch1.nodes,
+    stalks: collapsedStalks,
+    dBreakQ16: dBreak,
+    entropyCeilingQ16: ceiling,
+    horizonsInverted: false,
+  });
+  assert.equal(breachVerdict.status, "BREACH_COLLAPSE");
+  assert.equal(breachVerdict.halted, true);
+
+  // 4. Entropy overflow when total entropy exceeds chapter ceiling
+  const overflowStalks = ch1.stalks.map((s) => Int32Array.from(s));
+  overflowStalks[5][3] = toQ16(260.0);
+  const overflowVerdict = evaluateGameVerdict({
+    tick: 600,
+    targetTicks: 1800,
+    nodes: ch1.nodes,
+    stalks: overflowStalks,
+    dBreakQ16: dBreak,
+    entropyCeilingQ16: ceiling,
+    horizonsInverted: false,
+  });
+  assert.equal(overflowVerdict.status, "ENTROPY_OVERFLOW");
+  assert.equal(overflowVerdict.halted, true);
 });
