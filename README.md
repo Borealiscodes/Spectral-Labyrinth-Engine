@@ -81,5 +81,5 @@ python3 -m http.server 8080
 ## 📜 Provenance & License
 
 * **Engine Architecture & Mathematical Uplifts:** Borealis Serenity Hedling (`NDH-RESEARCH-PILOT` · Dublin, Ireland)
-* **Upstream Architectural Baseline:** `EternitiesAi/ai-game-dev-kit` & `EternitiesAi/eternities-firstlight` (MIT License)
+* **Upstream Architectural Baseline:** `EternitiesAi/ai-game-dev-kit` & `EternitiesAi/eternities-firstlight` (MIT License / Deferred License boundaries respected)
 * **License:** MIT License
