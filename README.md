@@ -83,3 +83,17 @@ python3 -m http.server 8080
 * **Engine Architecture & Mathematical Uplifts:** Borealis Serenity Hedling (`NDH-RESEARCH-PILOT` · Dublin, Ireland)
 * **Upstream Architectural Baseline:** `EternitiesAi/ai-game-dev-kit` & `EternitiesAi/eternities-firstlight` (MIT License / Deferred License boundaries respected)
 * **License:** MIT License
+
+## 🗺️ Interactive Features Roadmap (`v0.2` → `v1.0`)
+
+* **Phase 1 (`v0.1` — Complete):** Zero-float `Q16.16` cellular sheaf kernel, discrete First & Second Law conservation checks, `A7.2` Tikhonov collapse repair, `6/6` `node --test` verification, and live `60 Hz` Canvas telemetry HUD.
+* **Phase 2 (`v0.2` — Interactive Targeting & Navigation):**
+  * Direct pointer/touch node selection on the Canvas to route Hope impulses to specific Magical Girl stalks.
+  * WASD / Arrow / touch-drag symplectic radial thrust (`q`, `p`) modulating spatial distortion $d_{\text{eff}}(r)$ in real time.
+  * Live radial depth gauge (`r / R_lab`) and breach warning alert when any node approaches $D_{\text{break}}$.
+* **Phase 3 (`v0.3` — Multi-Chapter Campaign Progression):**
+  * Interactive chapter switcher across **Loop 100 (Walpurgisnacht)**, **Law of Cycles Sheafification**, and **Rebellion Isolation Surgery**.
+  * Win/loss `game-verdict` state machine tracking entropy budget, Witch containment, and timeline reset counters.
+* **Phase 4 (`v1.0` — Deterministic Replay & Audio Synthesis):**
+  * Input-log replay verification (re-simulating a full run from seed + timestamped action inputs to prove bit-exact final `Q16.16` state).
+  * Optional procedural WebAudio harmonic tones (`288 Hz / 432 Hz / 528 Hz`) strictly gated inside `Ledger 2`.
