@@ -1,19 +1,16 @@
 /**
- * src/campaign-mitakihara-ui.js — Read-Only Telemetry HUD & Event Log (Ledger 2)
- * Renders Q16.16 sheaf diagnostics, thermodynamic conservation status, and
- * non-activating narrative logs without coupling UI events to physics state.
+ * src/campaign-mitakihara-ui.js — Read-Only Telemetry HUD & Verdict Display (v0.3)
+ * Renders Q16.16 sheaf diagnostics, chapter progress, deterministic game-verdict
+ * status, and non-activating narrative logs.
  *
  * Signed-off-by: Borealis Serenity Hedling <chguard-sentinel@vaked.dev>
  */
 
 import { fromQ16 } from "./core.js";
 
-/**
- * Update DOM telemetry panels from an immutable engine state snapshot.
- */
 export function updateTelemetryHud(elements, snapshot) {
   if (elements.tickLabel) {
-    elements.tickLabel.textContent = `Tick: ${snapshot.tick}`;
+    elements.tickLabel.textContent = `Tick: ${snapshot.tick} / ${snapshot.targetTicks}`;
   }
   if (elements.energyLabel) {
     const eVal = fromQ16(snapshot.dirichletEnergyQ16 || 0).toFixed(4);
@@ -27,6 +24,14 @@ export function updateTelemetryHud(elements, snapshot) {
     elements.regimeLabel.textContent = snapshot.horizonsInverted
       ? "Regime: A7.2 Twisted Bundle (Horizons Inverted)"
       : "Regime: A6 Standard Law of Cycles";
+  }
+
+  if (elements.verdictBanner && snapshot.verdict) {
+    const v = snapshot.verdict;
+    const entropyStr = fromQ16(v.totalEntropyQ16).toFixed(2);
+    const ceilingStr = fromQ16(snapshot.entropyCeilingQ16).toFixed(0);
+    elements.verdictBanner.textContent = `[${v.status}] ${v.reason} (Entropy: ${entropyStr} / ${ceilingStr})`;
+    elements.verdictBanner.dataset.status = v.status;
   }
 
   if (elements.stalkTableBody) {
@@ -47,9 +52,6 @@ export function updateTelemetryHud(elements, snapshot) {
   }
 }
 
-/**
- * Append a timestamped diagnostic entry to the read-only narrative log.
- */
 export function appendDiagnosticLog(logElement, tick, message) {
   if (!logElement) return;
   const item = document.createElement("li");
