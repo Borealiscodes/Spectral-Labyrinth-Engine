@@ -1,0 +1,10 @@
+{
+  "name": "spectral-labyrinth-engine",
+  "version": "0.1.0",
+  "description": "Zero-float Q16.16 cellular sheaf and symplectic fan game runtime.",
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/verify-engine.test.mjs"
+  },
+  "license": "MIT"
+}
