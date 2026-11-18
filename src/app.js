@@ -1,7 +1,7 @@
 /**
- * src/app.js — Fixed-Timestep Engine Orchestrator & Chapter Switcher (v0.3)
+ * src/app.js — Fixed-Timestep Engine Orchestrator, Replay Logger & Audio Bridge (v1.0)
  * Connects deterministic Ledger 1 physics (60 Hz fixed accumulator) with
- * multi-chapter loading and deterministic game-verdict evaluation.
+ * input-log replay verification and optional Ledger 2 harmonic audio cues.
  *
  * Signed-off-by: Borealis Serenity Hedling <chguard-sentinel@vaked.dev>
  */
@@ -29,6 +29,8 @@ import {
 } from "./campaign-mitakihara-data.js";
 import { renderLabyrinthCanvas } from "./labyrinth-art.js";
 import { updateTelemetryHud, appendDiagnosticLog } from "./campaign-mitakihara-ui.js";
+import { computeWorldReceiptDigest, replayCampaignRun } from "./replay-verifier.js";
+import { createLabyrinthAudio } from "./labyrinth-audio.js";
 
 const FIXED_DT_MS = 1000 / 60;
 
@@ -37,6 +39,7 @@ function initEngine() {
   const ctx = canvas ? canvas.getContext("2d") : null;
   const logEl = document.getElementById("diagnostic-log");
   const chapterDescEl = document.getElementById("chapter-description");
+  const audio = createLabyrinthAudio();
 
   const hudElements = {
     tickLabel: document.getElementById("hud-tick"),
@@ -48,6 +51,7 @@ function initEngine() {
   };
 
   let world = null;
+  let inputLog = [];
 
   const recomputeDiagnostics = () => {
     const { dirichletEnergyQ16 } = evaluateCoboundary(world.edges, world.stalks);
@@ -71,6 +75,7 @@ function initEngine() {
   const loadChapter = (chapterId) => {
     const campaign = buildMitakiharaCampaignState(chapterId);
     const ch = campaign.chapter;
+    inputLog = [];
 
     world = {
       tick: 0,
@@ -107,15 +112,15 @@ function initEngine() {
     renderFrame();
   };
 
-  // Wire Chapter Switcher buttons
   document.querySelectorAll("[data-chapter]").forEach((btn) => {
     btn.addEventListener("click", () => {
       loadChapter(btn.getAttribute("data-chapter"));
     });
   });
 
-  const applyRadialThrust = (deltaMomentumQ16, directionLabel) => {
+  const applyRadialThrust = (deltaMomentumQ16, actionName, directionLabel) => {
     if (world.verdict?.halted) return;
+    inputLog.push({ tick: world.tick, action: actionName });
     world.pQ16 = (world.pQ16 + deltaMomentumQ16) | 0;
     const dEff = computeEffectiveDistanceQ16(
       Q_ONE,
@@ -133,6 +138,7 @@ function initEngine() {
 
   document.getElementById("btn-hope")?.addEventListener("click", () => {
     if (world.verdict?.halted) return;
+    inputLog.push({ tick: world.tick, action: "HOPE_IMPULSE" });
     const active = world.stalks[world.activeNodeIdx];
     const targetName = world.nodes[world.activeNodeIdx]?.id.toUpperCase() || "NODE";
     const stepOut = stepLabyrinthTick(
@@ -143,25 +149,30 @@ function initEngine() {
     world.stalks[world.activeNodeIdx] = stepOut.stalk;
     world.effectiveCurvatureQ16 = stepOut.effectiveCurvatureQ16;
     recomputeDiagnostics();
+    audio.cueHopeImpulse();
     appendDiagnosticLog(logEl, world.tick, `Hope impulse (+1.0 Q16.16) applied to ${targetName}.`);
     renderFrame();
   });
 
   document.getElementById("btn-loc")?.addEventListener("click", () => {
     if (world.verdict?.halted) return;
+    inputLog.push({ tick: world.tick, action: "LAW_OF_CYCLES" });
     world.stalks = applyLawOfCycles(world.stalks, world.labParams.dBreakQ16);
     recomputeDiagnostics();
+    audio.cueLawOfCycles();
     appendDiagnosticLog(logEl, world.tick, "Global Sheafification (Φ_LoC) executed.");
     renderFrame();
   });
 
   document.getElementById("btn-rebellion")?.addEventListener("click", () => {
     if (world.verdict?.halted) return;
+    inputLog.push({ tick: world.tick, action: "REBELLION_SURGERY" });
     const res = executeRebellionSurgery(world.edges, world.stalks, 1, 0);
     world.edges = res.twistedEdges;
     world.stalks = res.stabilizedStalks;
     world.horizonsInverted = res.horizonsInverted;
     recomputeDiagnostics();
+    audio.cueRebellionTwist();
     appendDiagnosticLog(
       logEl,
       world.tick,
@@ -172,16 +183,29 @@ function initEngine() {
 
   document.getElementById("btn-save")?.addEventListener("click", () => {
     const json = serializeSaveState(world);
-    const restored = deserializeSaveState(json);
-    appendDiagnosticLog(logEl, restored.tick, `Verified Q16.16 save snapshot (${json.length} bytes).`);
+    deserializeSaveState(json);
+    const liveDigest = computeWorldReceiptDigest(world);
+    const replay = replayCampaignRun(world.chapterId, inputLog, world.tick);
+    const match = liveDigest === replay.digest ? "MATCH ✅" : "DRIFT ❌";
+    appendDiagnosticLog(
+      logEl,
+      world.tick,
+      `Replay Audit [${match}]: ${liveDigest.slice(0, 16)}... (${inputLog.length} inputs)`
+    );
+  });
+
+  const audioBtn = document.getElementById("btn-audio");
+  audioBtn?.addEventListener("click", () => {
+    const nowMuted = audio.toggleMute();
+    audioBtn.textContent = nowMuted ? "Audio: Muted" : "Audio: 432Hz Active";
   });
 
   document.getElementById("btn-dive")?.addEventListener("click", () => {
-    applyRadialThrust(-toQ16(1.5), "Inward radial thrust");
+    applyRadialThrust(-toQ16(1.5), "THRUST_IN", "Inward radial thrust");
   });
 
   document.getElementById("btn-retreat")?.addEventListener("click", () => {
-    applyRadialThrust(toQ16(1.5), "Outward radial thrust");
+    applyRadialThrust(toQ16(1.5), "THRUST_OUT", "Outward radial thrust");
   });
 
   canvas?.addEventListener("pointerdown", (ev) => {
@@ -202,6 +226,7 @@ function initEngine() {
       const ny = cy + Math.sin(angle) * orbitR;
       if (Math.hypot(clickX - nx, clickY - ny) <= 28) {
         world.activeNodeIdx = idx;
+        inputLog.push({ tick: world.tick, action: "SELECT_NODE", targetIdx: idx });
         appendDiagnosticLog(logEl, world.tick, `Target locked: ${node.label}`);
         renderFrame();
       }
@@ -211,14 +236,13 @@ function initEngine() {
   window.addEventListener("keydown", (ev) => {
     const thrust = toQ16(1.5);
     if (ev.key === "w" || ev.key === "W" || ev.key === "ArrowUp") {
-      applyRadialThrust(-thrust, "Inward radial thrust (W/Up)");
+      applyRadialThrust(-thrust, "THRUST_IN", "Inward radial thrust (W/Up)");
     } else if (ev.key === "s" || ev.key === "S" || ev.key === "ArrowDown") {
-      applyRadialThrust(thrust, "Outward radial thrust (S/Down)");
+      applyRadialThrust(thrust, "THRUST_OUT", "Outward radial thrust (S/Down)");
     }
   });
 
-  // Boot Chapter I
-  loadChapter(CAMPAIGN_CHAPTERS[0].id);
+  loadChapter(CAMPAIGN_CHAPTERS.id);
 
   let lastTime = performance.now();
   let accumulator = 0;
@@ -244,7 +268,12 @@ function initEngine() {
 
         recomputeDiagnostics();
         if (world.verdict?.halted) {
-          appendDiagnosticLog(logEl, world.tick, `GAME VERDICT: ${world.verdict.status} — ${world.verdict.reason}`);
+          const finalDigest = computeWorldReceiptDigest(world);
+          appendDiagnosticLog(
+            logEl,
+            world.tick,
+            `GAME VERDICT: ${world.verdict.status} | SHA-256: ${finalDigest.slice(0, 16)}...`
+          );
           break;
         }
       }
