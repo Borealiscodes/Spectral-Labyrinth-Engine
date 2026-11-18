@@ -185,3 +185,76 @@ export function executeRebellionSurgery(edges, stalks, homuraIdx, madokaIdx, lam
     horizonsInverted: true,
   };
 }
+
+/**
+ * Deterministic Game-Verdict State Machine (Ledger 1 — Ten Laws: game-verdict).
+ * Evaluates chapter win/loss invariants purely from Q16.16 stalk channels:
+ *   - BREACH_COLLAPSE: Any non-sink node exceeds 2 * D_break without stabilization.
+ *   - ENTROPY_OVERFLOW: Total exported entropy exceeds chapter entropyCeilingQ16.
+ *   - VICTORY_STABILIZED: Survival tick >= targetTicks with all non-sink nodes < D_break.
+ *   - ACTIVE: Simulation ongoing within admissible bounds.
+ */
+export function evaluateGameVerdict({
+  tick,
+  targetTicks,
+  nodes,
+  stalks,
+  dBreakQ16,
+  entropyCeilingQ16,
+  horizonsInverted,
+}) {
+  let totalEntropyQ16 = 0;
+  let criticalBreachCount = 0;
+  let warningCount = 0;
+  const catastrophicThreshold = qMul(toQ16(5.0), dBreakQ16); // 50.0 catastrophic limit
+
+  for (let i = 0; i < nodes.length; i++) {
+    const stalk = stalks[i];
+    if (!stalk) continue;
+    totalEntropyQ16 = qAdd(totalEntropyQ16, stalk[3]);
+
+    if (nodes[i].role === "entropy_sink") continue;
+
+    if (stalk[1] >= catastrophicThreshold && !horizonsInverted) {
+      criticalBreachCount++;
+    } else if (stalk[1] >= dBreakQ16 && !horizonsInverted) {
+      warningCount++;
+    }
+  }
+
+  if (criticalBreachCount > 0) {
+    return {
+      status: "BREACH_COLLAPSE",
+      halted: true,
+      totalEntropyQ16,
+      reason: `Catastrophic Witch singularity on ${criticalBreachCount} node(s) (D >= 5 * D_break).`,
+    };
+  }
+
+  if (totalEntropyQ16 > entropyCeilingQ16) {
+    return {
+      status: "ENTROPY_OVERFLOW",
+      halted: true,
+      totalEntropyQ16,
+      reason: "Total universe entropy exceeded chapter containment ceiling.",
+    };
+  }
+
+  if (tick >= targetTicks && warningCount === 0) {
+    return {
+      status: "VICTORY_STABILIZED",
+      halted: true,
+      totalEntropyQ16,
+      reason: `Manifold stabilized for ${targetTicks} ticks within thermodynamic bounds.`,
+    };
+  }
+
+  return {
+    status: "ACTIVE",
+    halted: false,
+    totalEntropyQ16,
+    reason: warningCount > 0
+      ? `${warningCount} node(s) above D_break — apply Φ_LoC or Hope before singularity.`
+      : "All stalks within admissible Q16.16 bounds.",
+  };
+}
