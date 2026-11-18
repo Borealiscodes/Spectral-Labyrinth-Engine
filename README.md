@@ -84,16 +84,12 @@ python3 -m http.server 8080
 * **Upstream Architectural Baseline:** `EternitiesAi/ai-game-dev-kit` & `EternitiesAi/eternities-firstlight` (MIT License / Deferred License boundaries respected)
 * **License:** MIT License
 
-## 🗺️ Interactive Features Roadmap (`v0.2` → `v1.0`)
+## 🗺️ Interactive Features Roadmap (`v0.1` → `v1.0`)
 
-* **Phase 1 (`v0.1` — Complete):** Zero-float `Q16.16` cellular sheaf kernel, discrete First & Second Law conservation checks, `A7.2` Tikhonov collapse repair, `6/6` `node --test` verification, and live `60 Hz` Canvas telemetry HUD.
-* **Phase 2 (`v0.2` — Interactive Targeting & Navigation):**
-  * Direct pointer/touch node selection on the Canvas to route Hope impulses to specific Magical Girl stalks.
-  * WASD / Arrow / touch-drag symplectic radial thrust (`q`, `p`) modulating spatial distortion $d_{\text{eff}}(r)$ in real time.
-  * Live radial depth gauge (`r / R_lab`) and breach warning alert when any node approaches $D_{\text{break}}$.
-* **Phase 3 (`v0.3` — Multi-Chapter Campaign Progression):**
-  * Interactive chapter switcher across **Loop 100 (Walpurgisnacht)**, **Law of Cycles Sheafification**, and **Rebellion Isolation Surgery**.
-  * Win/loss `game-verdict` state machine tracking entropy budget, Witch containment, and timeline reset counters.
-* **Phase 4 (`v1.0` — Deterministic Replay & Audio Synthesis):**
-  * Input-log replay verification (re-simulating a full run from seed + timestamped action inputs to prove bit-exact final `Q16.16` state).
-  * Optional procedural WebAudio harmonic tones (`288 Hz / 432 Hz / 528 Hz`) strictly gated inside `Ledger 2`.
+* **Phase 1 (`v0.1` — Complete ✅):** Zero-float `Q16.16` cellular sheaf kernel, discrete First & Second Law conservation checks, `A7.2` Tikhonov collapse repair, `6/6` `node --test` verification, and live `60 Hz` Canvas telemetry HUD.
+* **Phase 2 (`v0.2` — Complete ✅):** Direct pointer/touch 0-cell node selection on the Canvas, WASD / Arrow / touch-button symplectic radial thrust (`q`, `p`) modulating spatial distortion $d_{\text{eff}}(r)$, live dashed radial depth ring, and red $D_{\text{break}}$ breach warning halos.
+* **Phase 3 (`v0.3` — Complete ✅):** Multi-chapter campaign switcher (**Ch. I: Loop 100**, **Ch. II: Law of Cycles**, **Ch. III: Rebellion `A7.2`**), deterministic `game-verdict` win/loss state machine (`ACTIVE`, `VICTORY_STABILIZED`, `BREACH_COLLAPSE`, `ENTROPY_OVERFLOW`), and `7/7` `node --test` verification on ARM64.
+* **Phase 4 (`v1.0` — Deterministic Replay Receipts & Ledger-2 Audio):**
+  * **Input-Log Replay Engine (`src/replay-verifier.js`):** Records `{ tick, action, targetIdx }` tuples during a run and re-simulates from the initial `Q16.16` seed to certify bit-exact final state hashes (`SHA-256` replay receipts) without floating-point drift.
+  * **Procedural WebAudio Harmonic Synthesizer (`src/labyrinth-audio.js`):** Optional, mute-by-default WebAudio API tone generator (`288 Hz` baseline stability, `432 Hz` Law of Cycles purification chime, `528 Hz` Horizon Inversion chord) strictly gated inside `Ledger 2` so audio events never influence `Ledger 1` physics.
+  * **Full `8/8` `node --test` Release Gate:** Automated headless replay verification test proving two independent runs with identical seed and input logs produce identical final `Q16.16` stalks and `game-verdict` hashes.
