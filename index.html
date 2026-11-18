@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spectral Labyrinth Engine — Q16.16 Cellular Sheaf Runtime</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>Spectral Labyrinth Engine <span class="badge">Q16.16 Zero-Float</span></h1>
+    <p class="subtitle">Cellular Sheaf Cohomology &amp; Symplectic Timeline Runtime (Ledger 1 / Ledger 2 Separated)</p>
+  </header>
+
+  <main class="layout">
+    <section class="viewport-panel">
+      <canvas id="labyrinth-canvas" width="560" height="440"></canvas>
+      <div class="controls">
+        <button id="btn-hope">Apply Hope Impulse</button>
+        <button id="btn-loc">Law of Cycles (Φ_LoC)</button>
+        <button id="btn-rebellion" class="accent">Rebellion Surgery (A7.2)</button>
+        <button id="btn-save">Verify Save Schema</button>
+      </div>
+    </section>
+
+    <section class="telemetry-panel">
+      <div class="metrics">
+        <div id="hud-tick">Tick: 0</div>
+        <div id="hud-energy">H¹ Frustration Energy: 0.0000</div>
+        <div id="hud-curvature">Effective Curvature (k_eff): 2.5000</div>
+        <div id="hud-regime">Regime: A6 Standard Law of Cycles</div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Node (0-Cell)</th>
+            <th>Hope (H)</th>
+            <th>Despair (D)</th>
+            <th>Purity (R)</th>
+            <th>Entropy (S)</th>
+          </tr>
+        </thead>
+        <tbody id="stalk-table-body"></tbody>
+      </table>
+
+      <h3>Diagnostic Telemetry Log (Read-Only)</h3>
+      <ul id="diagnostic-log" class="log-list"></ul>
+    </section>
+  </main>
+
+  <script type="module" src="src/app.js"></script>
+</body>
+</html>
