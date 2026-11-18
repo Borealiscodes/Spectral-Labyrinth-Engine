@@ -115,3 +115,7 @@ Use code with caution.
 • License: MIT License
 • Developer Certificate of Origin (DCO): Signed-off-by: Borealis Serenity Hedling <chguard-sentinel@vaked.dev>
 
+--- 
+Academic reference 
+
+Hedling, B. S. (2026). Thermodynamic Cellular Sheaves and Collapse-Surface Surgery on Closed-World Narrative Manifolds: A Structural Topology of Puella Magi Madoka Magica (v1.0). Zenodo. https://doi.org/10.5281/zenodo.24341372
