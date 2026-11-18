@@ -1,8 +1,7 @@
-> ### 🧪 ALPHA RESEARCH RUNTIME — CORE VERIFIED (`6/6` PASSING)
-> **Status:** Core `Q16.16` Kernel & Browser Canvas Verified • Active Experimental Sandbox  
+> ### ✅ RELEASE v1.0 — DETERMINISTIC REPLAY & SHEAF KERNEL VERIFIED (`8/8` PASSING)
+> **Status:** `v1.0` Core & Replay Engine Verified • Zero-Float `Q16.16` ARM64 Loopback Confirmed  
 > 
-> **Verification Update (Nov 2026):** The zero-float `Q16.16` cellular sheaf kernel, thermodynamic conservation checks, `A7.2` Tikhonov collapse repair, and `60 Hz` Canvas viewport have been verified on ARM64 (`node --test`: **6/6 passing**; browser loopback rendering confirmed). While gameplay mechanics and campaign chapters are still expanding in active pre-1.0 development, the core mathematical engine and read-only telemetry HUD are operational.
-
+> **Release Verification (Nov 2026):** All four development phases (`v0.1`–`v1.0`) are verified on ARM64 hardware (`node --test`: **8/8 passing**). The runtime features zero-float `Q16.16` cellular sheaf cohomology ($H^1$), discrete First & Second Law thermodynamic conservation, `A7.2` Tikhonov collapse repair, multi-chapter `game-verdict` state transitions, deterministic input-log replay (`SHA-256` verified `MATCH`), and mute-by-default `Ledger 2` WebAudio harmonic cues (`288 Hz / 432 Hz / 528 Hz`).
 
 # 🌌 Spectral Labyrinth Engine — Zero-Float Cellular Sheaf Fan Game Runtime
 
