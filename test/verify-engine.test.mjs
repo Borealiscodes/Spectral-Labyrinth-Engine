@@ -1,9 +1,10 @@
 /**
- * test/verify-engine.test.mjs — Automated Deterministic Game-Verdict Suite (v0.3)
+ * test/verify-engine.test.mjs — Automated Deterministic Game-Verdict Suite (v1.0)
  * Verifies Q16.16 fixed-point arithmetic, save serialization (Law 5),
  * seeded RNG determinism (Law 7), cellular sheaf coboundary, thermodynamic laws,
- * Rebellion A7.2 collapse repair, symplectic labyrinth integration, and v0.3
- * multi-chapter game-verdict state transitions.
+ * Rebellion A7.2 collapse repair, symplectic labyrinth integration, v0.3
+ * multi-chapter game-verdict state transitions, and v1.0 deterministic input-log
+ * replay SHA-256 receipts.
  *
  * Run: node --test test/verify-engine.test.mjs
  * Signed-off-by: Borealis Serenity Hedling <chguard-sentinel@vaked.dev>
@@ -44,6 +45,8 @@ import {
   CAMPAIGN_CHAPTERS,
   buildMitakiharaCampaignState,
 } from "../src/campaign-mitakihara-data.js";
+
+import { replayCampaignRun } from "../src/replay-verifier.js";
 
 test("1. Q16.16 Fixed-Point & Pole-Safe Tikhonov Division", () => {
   const two = toQ16(2.0);
@@ -225,4 +228,32 @@ test("7. Multi-Chapter Campaign & Deterministic Game-Verdict State Machine (v0.3
   });
   assert.equal(overflowVerdict.status, "ENTROPY_OVERFLOW");
   assert.equal(overflowVerdict.halted, true);
+});
+
+test("8. Deterministic Input-Log Replay & SHA-256 State Receipt (v1.0)", () => {
+  const inputLog = [
+    { tick: 10, action: "SELECT_NODE", targetIdx: 4 }, // Lock Kyoko
+    { tick: 25, action: "HOPE_IMPULSE" },
+    { tick: 40, action: "THRUST_IN" },
+    { tick: 60, action: "LAW_OF_CYCLES" },
+    { tick: 90, action: "SELECT_NODE", targetIdx: 2 }, // Lock Sayaka
+    { tick: 110, action: "HOPE_IMPULSE" },
+  ];
+
+  const runA = replayCampaignRun("chapter-2-law-of-cycles", inputLog, 150);
+  const runB = replayCampaignRun("chapter-2-law-of-cycles", inputLog, 150);
+
+  // Two independent replays from the same seed + input log must be bit-exact
+  assert.equal(runA.finalTick, 150);
+  assert.equal(runA.digest.length, 64);
+  assert.equal(runA.digest, runB.digest);
+  assert.equal(runA.verdict.status, runB.verdict.status);
+
+  // Perturbing a single input event must produce a distinct SHA-256 state receipt
+  const alteredLog = [
+    ...inputLog,
+    { tick: 125, action: "HOPE_IMPULSE" },
+  ];
+  const runC = replayCampaignRun("chapter-2-law-of-cycles", alteredLog, 150);
+  assert.notEqual(runA.digest, runC.digest);
 });
