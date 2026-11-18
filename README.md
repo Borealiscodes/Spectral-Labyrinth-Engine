@@ -1,7 +1,7 @@
-> ### 🚧 PROTOTYPE & PRE-ALPHA RESEARCH NOTICE
-> **Status:** Untested Prototype • Not Yet Fully Operational • Active Mathematical Sandbox  
+> ### 🧪 ALPHA RESEARCH RUNTIME — CORE VERIFIED (`6/6` PASSING)
+> **Status:** Core `Q16.16` Kernel & Browser Canvas Verified • Active Experimental Sandbox  
 > 
-> Please note that **Spectral Labyrinth Engine** is an early-stage experimental prototype. While the underlying `Q16.16` fixed-point math, cellular sheaf equations, and modular ESM layout are structurally scaffolded, the runtime has **not yet undergone full end-to-end integration testing** and should not be treated as a finished, production-ready game engine. Expect rough edges, unverified browser rendering paths, and evolving APIs until a complete `node --test` and browser QA pass is signed off.
+> **Verification Update (Nov 2026):** The zero-float `Q16.16` cellular sheaf kernel, thermodynamic conservation checks, `A7.2` Tikhonov collapse repair, and `60 Hz` Canvas viewport have been verified on ARM64 (`node --test`: **6/6 passing**; browser loopback rendering confirmed). While gameplay mechanics and campaign chapters are still expanding in active pre-1.0 development, the core mathematical engine and read-only telemetry HUD are operational.
 
 
 # 🌌 Spectral Labyrinth Engine — Zero-Float Cellular Sheaf Fan Game Runtime
