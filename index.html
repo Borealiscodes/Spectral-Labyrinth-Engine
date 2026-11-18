@@ -3,14 +3,25 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Spectral Labyrinth Engine — Q16.16 Cellular Sheaf Runtime</title>
+  <title>Spectral Labyrinth Engine — Q16.16 Cellular Sheaf Runtime v0.3</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header>
-    <h1>Spectral Labyrinth Engine <span class="badge">Q16.16 Zero-Float v0.2</span></h1>
-    <p class="subtitle">Cellular Sheaf Cohomology &amp; Symplectic Timeline Runtime (Ledger 1 / Ledger 2 Separated)</p>
+    <h1>Spectral Labyrinth Engine <span class="badge">Q16.16 Zero-Float v0.3</span></h1>
+    <p class="subtitle">Multi-Chapter Cellular Sheaf &amp; Symplectic Timeline Runtime (Ledger 1 / Ledger 2 Separated)</p>
   </header>
+
+  <section class="chapter-bar" style="margin-bottom: 1rem; display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;">
+    <button data-chapter="chapter-1-walpurgisnacht">Ch. I: Loop 100</button>
+    <button data-chapter="chapter-2-law-of-cycles">Ch. II: Law of Cycles</button>
+    <button data-chapter="chapter-3-rebellion-edge-case" class="accent">Ch. III: Rebellion (A7.2)</button>
+    <span id="chapter-description" class="subtitle" style="margin: 0 0 0 0.5rem;"></span>
+  </section>
+
+  <div id="verdict-banner" style="background: #0f172a; border: 1px solid #334155; padding: 0.65rem 0.85rem; border-radius: 6px; margin-bottom: 1rem; font-size: 0.82rem;">
+    [ACTIVE] Initializing game-verdict state machine...
+  </div>
 
   <main class="layout">
     <section class="viewport-panel">
@@ -28,7 +39,7 @@
 
     <section class="telemetry-panel">
       <div class="metrics">
-        <div id="hud-tick">Tick: 0</div>
+        <div id="hud-tick">Tick: 0 / 1800</div>
         <div id="hud-energy">H¹ Frustration Energy: 0.0000</div>
         <div id="hud-curvature">Effective Curvature (k_eff): 2.5000</div>
         <div id="hud-regime">Regime: A6 Standard Law of Cycles</div>
