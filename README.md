@@ -1,3 +1,9 @@
+> ### 🚧 PROTOTYPE & PRE-ALPHA RESEARCH NOTICE
+> **Status:** Untested Prototype • Not Yet Fully Operational • Active Mathematical Sandbox  
+> 
+> Please note that **Spectral Labyrinth Engine** is an early-stage experimental prototype. While the underlying `Q16.16` fixed-point math, cellular sheaf equations, and modular ESM layout are structurally scaffolded, the runtime has **not yet undergone full end-to-end integration testing** and should not be treated as a finished, production-ready game engine. Expect rough edges, unverified browser rendering paths, and evolving APIs until a complete `node --test` and browser QA pass is signed off.
+
+
 # 🌌 Spectral Labyrinth Engine — Zero-Float Cellular Sheaf Fan Game Runtime
 
 **A deterministic, zero-dependency ESM web game engine uniting cellular sheaf cohomology, `Q16.16` symplectic physics, and `A7.2` collapse-surface repair across closed-world magical-girl timeline manifolds.**
